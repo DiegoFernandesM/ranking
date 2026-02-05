@@ -1,6 +1,11 @@
 package com.gametracker.ranking.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "game_rank_config")
@@ -10,25 +15,20 @@ public class GameRankConfig {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Jogo ao qual essa configuração pertence
     @OneToOne
     @JoinColumn(name = "game_id")
     private Game game;
 
-    // Peso do KDA no cálculo
     private double weightKda;
 
-    // Peso das horas jogadas
     private double weightHours;
 
-    // Limites de rank (exemplo)
     private double bronzeLimit;
     private double silverLimit;
     private double goldLimit;
     private double platinumLimit;
     private double diamondLimit;
 
-    // ====== GETTERS E SETTERS ======
 
     public Long getId() {
         return id;
@@ -74,4 +74,11 @@ public class GameRankConfig {
         this.silverLimit = silverLimit;
     }
 
+    public double getPesoHoras() {
+        return weightHours;
+    }
+
+    public double getPesoKda() {
+        return weightKda;
+    }
 }

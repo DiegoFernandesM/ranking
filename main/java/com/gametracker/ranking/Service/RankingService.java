@@ -1,18 +1,21 @@
-package com.gametracker.ranking.service;
+package com.gametracker.ranking.Service;
 
-import com.gametracker.ranking.model.GameRankConfig;
+import com.gametracker.ranking.DTO.RankingPositionDTO;
 import com.gametracker.ranking.model.UserGameStats;
+import com.gametracker.ranking.repository.UserGameStatsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class RankingService {
 
-    public double calcularScore(UserGameStats stats, GameRankConfig config) {
-        double horas = stats.getHoursPlayed();
-        double kda = stats.getKda();
+    private final UserGameStatsRepository statsRepo;
 
-        return (Math.log(horas + 1) * config.getPesoHoras()) +
-                (kda * config.getPesoKda());
+    public double calcularScore(double hoursPlayed, double kda, double pesoHoras, double pesoKda) {
+        return Math.log(hoursPlayed + 1) * pesoHoras + (kda * pesoKda);
     }
 
     public String definirRank(double score) {
@@ -22,4 +25,28 @@ public class RankingService {
         if (score >= 200) return "SILVER";
         return "BRONZE";
     }
+
+    public List<UserGameStats> rankingPorJogo(Long gameId) {
+        return statsRepo.findByGameIdOrderByScoreDesc(gameId);
+    }
+
+    public RankingPositionDTO posicaoDoJogador(Long gameId, Long userId) {
+
+        List<UserGameStats> ranking = statsRepo.findByGameIdOrderByScoreDesc(gameId);
+
+        for (int i = 0; i < ranking.size(); i++) {
+            UserGameStats stats = ranking.get(i);
+
+            if (stats.getUser().getId().equals(userId)) {
+                return new RankingPositionDTO(
+                        i + 1,
+                        stats.getScore(),
+                        stats.getRank()
+                );
+            }
+        }
+
+        throw new RuntimeException("Usuário não encontrado no ranking");
+    }
+
 }

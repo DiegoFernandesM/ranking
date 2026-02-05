@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: white;
+            padding: 40px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .card {
+            background: #1e1e1e;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎮 Buscar jogo</h1>
+
+<input id="nomeJogo" placeholder="Digite o nome do jogo">
+<button onclick="buscar()">Buscar</button>
+
+<div id="resultado"></div>
+
+<script>
+    async function buscar() {
+        const nome = document.getElementById("nomeJogo").value;
+
+        const response = await fetch(`http://localhost:8080/games/import/${nome}`, {
+            method: "POST"
+        });
+
+
+        if (!response.ok) {
+            document.getElementById("resultado").innerHTML = "Jogo não encontrado 😢";
+            return;
+        }
+
+        const jogo = await response.json();
+
+        document.getElementById("resultado").innerHTML = `
+        <div class="card">
+            <h2>${jogo.name}</h2>
+            <p>⭐ Nota: ${jogo.rating}</p>
+            <p>🎮 Gêneros: ${jogo.genres.map(g => g.name).join(", ")}</p>
+        </div>
+    `;
+    }
+</script>
+
+</body>
+</html>
