@@ -1,5 +1,6 @@
 package com.gametracker.ranking.Service;
 
+import com.gametracker.ranking.DTO.RankingDTO;
 import com.gametracker.ranking.DTO.RankingPositionDTO;
 import com.gametracker.ranking.model.UserGameStats;
 import com.gametracker.ranking.repository.UserGameStatsRepository;
@@ -48,5 +49,14 @@ public class RankingService {
 
         throw new RuntimeException("Usuário não encontrado no ranking");
     }
-
+    public List<RankingDTO> rankingPublico(Long gameId) {
+        return statsRepo.findByGameIdOrderByScoreDesc(gameId)
+                .stream()
+                .map(stats -> new RankingDTO(
+                        stats.getUser().getUsername(),
+                        stats.getScore(),
+                        stats.getRank()
+                ))
+                .toList();
+    }
 }

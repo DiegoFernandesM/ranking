@@ -1,61 +1,30 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Game Tracker</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #121212;
-            color: white;
-            padding: 40px;
-        }
-        input, button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        .card {
-            background: #1e1e1e;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-            width: 400px;
-        }
-    </style>
+    <title>Ranking</title>
 </head>
 <body>
 
-<h1>🎮 Buscar jogo</h1>
-
-<input id="nomeJogo" placeholder="Digite o nome do jogo">
-<button onclick="buscar()">Buscar</button>
-
-<div id="resultado"></div>
+<h1>Ranking do Jogo</h1>
+<ul id="lista"></ul>
 
 <script>
-    async function buscar() {
-        const nome = document.getElementById("nomeJogo").value;
+    async function carregarRanking() {
+        const res = await fetch("http://localhost:8080/rank/game/1/public");
+        const data = await res.json();
 
-        const response = await fetch(`http://localhost:8080/games/import/${nome}`, {
-            method: "POST"
+        const ul = document.getElementById("lista");
+        ul.innerHTML = "";
+
+        data.forEach(jogador => {
+            const li = document.createElement("li");
+            li.innerText = `${jogador.username} - ${jogador.rank} (${jogador.score.toFixed(2)})`;
+            ul.appendChild(li);
         });
-
-
-        if (!response.ok) {
-            document.getElementById("resultado").innerHTML = "Jogo não encontrado 😢";
-            return;
-        }
-
-        const jogo = await response.json();
-
-        document.getElementById("resultado").innerHTML = `
-        <div class="card">
-            <h2>${jogo.name}</h2>
-            <p>⭐ Nota: ${jogo.rating}</p>
-            <p>🎮 Gêneros: ${jogo.genres.map(g => g.name).join(", ")}</p>
-        </div>
-    `;
     }
+
+    carregarRanking();
 </script>
 
 </body>

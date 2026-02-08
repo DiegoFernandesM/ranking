@@ -1,6 +1,7 @@
 package com.gametracker.ranking.controller;
 
 import com.gametracker.ranking.DTO.LoginRequestDTO;
+import com.gametracker.ranking.DTO.RegisterRequestDTO;
 import com.gametracker.ranking.Security.JwtService;
 import com.gametracker.ranking.model.*;
 import com.gametracker.ranking.repository.UserRepository;
@@ -34,5 +35,20 @@ public class AuthController {
         }
 
         return jwtService.gerarToken(user.getEmail());
+    }
+    @PostMapping("/register")
+    public String register(@RequestBody RegisterRequestDTO request) {
+
+        if (userRepo.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email já cadastrado");
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepo.save(user);
+
+        return "Usuário criado com sucesso";
     }
 }
