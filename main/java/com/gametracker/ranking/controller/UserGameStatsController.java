@@ -33,6 +33,9 @@ public class UserGameStatsController {
         stats.setGame(game);
         stats.setHoursPlayed(dto.hoursPlayed());
         stats.setKda(dto.kda());
+        stats.setScore(dto.score());   // 👈 FALTAVA
+        stats.setRank(dto.rank());     // 👈 FALTAVA
+
 
         return statsRepo.save(stats);
     }

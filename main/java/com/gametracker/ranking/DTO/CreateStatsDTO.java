@@ -4,5 +4,8 @@ public record CreateStatsDTO(
         Long userId,
         Long gameId,
         double hoursPlayed,
-        double kda
+        double kda,
+        double score,
+        String rank
 ) {}
+
