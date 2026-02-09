@@ -1,36 +1,25 @@
 package com.gametracker.ranking.controller;
 
-import com.gametracker.ranking.Service.GameImportService;
-import com.gametracker.ranking.model.Game;
-import com.gametracker.ranking.repository.GameRepository;
-import lombok.RequiredArgsConstructor;
+import com.gametracker.ranking.Service.ExternalGameApiService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
-@RequestMapping("/games")
-@RequiredArgsConstructor
+@RequestMapping("/api/test")
 public class GameController {
 
+    private final ExternalGameApiService externalGameApiService;
 
-    private final GameRepository repo;
-
-
-    private final GameImportService GameImportService;
-
-    @PostMapping
-    public Game save(@RequestBody Game game) {
-        return repo.save(game);
+    public GameController(ExternalGameApiService externalGameApiService) {
+        this.externalGameApiService = externalGameApiService;
     }
 
-    @GetMapping
-    public List<Game> list() {
-        return repo.findAll();
-    }
-
-    @PostMapping("/import/{nome}")
-    public Game importar(@PathVariable String nome) {
-        return GameImportService.importar(nome);
+    @GetMapping("/rawg")
+    public ResponseEntity<?> testarRawg(@RequestParam String nome) {
+        return externalGameApiService.buscarPrimeiroJogo(nome)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
+

@@ -8,6 +8,7 @@ import com.gametracker.ranking.repository.GameRepository;
 import com.gametracker.ranking.repository.UserGameStatsRepository;
 import com.gametracker.ranking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,9 @@ public class UserGameStatsController {
     private final GameRepository gameRepo;
 
     @PostMapping
-    public UserGameStats criarStats(@RequestBody CreateStatsDTO dto) {
+    public UserGameStats criarStats(@RequestBody CreateStatsDTO dto, Authentication  auth) {
 
+        String email = auth.getName();
         User user = userRepo.findById(dto.userId()).orElseThrow();
         Game game = gameRepo.findById(dto.gameId()).orElseThrow();
 

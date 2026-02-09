@@ -6,7 +6,6 @@ import com.gametracker.ranking.Service.RankingService;
 import com.gametracker.ranking.model.Ranking;
 import com.gametracker.ranking.model.User;
 import com.gametracker.ranking.repository.RankingRepository;
-import com.gametracker.ranking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,51 +18,28 @@ import java.util.List;
 public class RankingController {
 
     private final RankingService rankingService;
-    private final UserRepository userRepository;
-    private final RankingRepository rankingRepository;
+    private final RankingRepository rankingRepo;
 
-    // =========================
-    // TESTE DE AUTENTICAÇÃO
-    // =========================
-    @GetMapping("/test")
-    public String teste(Authentication auth) {
-        return "Autenticado como: " + auth.getName();
-    }
-
-    // =========================
-    // MINHA POSIÇÃO NO JOGO
-    // =========================
     @GetMapping("/game/{gameId}/me")
     public RankingPositionDTO minhaPosicao(
             @PathVariable Long gameId,
             Authentication auth
     ) {
-        String email = auth.getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
+        User user = (User) auth.getPrincipal();
         return rankingService.posicaoDoJogador(gameId, user.getId());
     }
 
-    // =========================
-    // MEUS RANKINGS
-    // =========================
     @GetMapping("/me")
     public List<Ranking> meusRankings(Authentication auth) {
-        String email = auth.getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        return rankingRepository.findByUser(user);
+        User user = (User) auth.getPrincipal();
+        System.out.println("USER ID = " + user.getId());
+        return rankingRepo.findByUser(user);
     }
 
-    // =========================
-    // RANKING PÚBLICO
-    // =========================
+
     @GetMapping("/game/{gameId}/public")
     public List<RankingDTO> rankingPublico(@PathVariable Long gameId) {
         return rankingService.rankingPublico(gameId);
     }
 }
+

@@ -1,34 +1,25 @@
 package com.gametracker.ranking.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import com.gametracker.ranking.model.Game;
+import com.gametracker.ranking.model.User;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
-
-@Entity
 public class UserGameStats {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Game game;
-
-    public double getHoursPlayed() {
-        return hoursPlayed;
-    }
-
-    public void setHoursPlayed(double hoursPlayed) {
-        this.hoursPlayed = hoursPlayed;
-    }
 
     private double hoursPlayed;
     private double kda;

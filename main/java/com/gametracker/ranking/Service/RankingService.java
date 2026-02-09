@@ -28,12 +28,13 @@ public class RankingService {
     }
 
     public List<UserGameStats> rankingPorJogo(Long gameId) {
-        return statsRepo.findByGameIdOrderByScoreDesc(gameId);
+        return statsRepo.findByGame_IdOrderByScoreDesc(gameId);
+
     }
 
     public RankingPositionDTO posicaoDoJogador(Long gameId, Long userId) {
 
-        List<UserGameStats> ranking = statsRepo.findByGameIdOrderByScoreDesc(gameId);
+        List<UserGameStats> ranking = statsRepo.findByGame_IdOrderByScoreDesc(gameId);
 
         for (int i = 0; i < ranking.size(); i++) {
             UserGameStats stats = ranking.get(i);
@@ -47,10 +48,10 @@ public class RankingService {
             }
         }
 
-        throw new RuntimeException("Usuário não encontrado no ranking");
+        throw new RuntimeException("Usuario nao encontrado no ranking");
     }
     public List<RankingDTO> rankingPublico(Long gameId) {
-        return statsRepo.findByGameIdOrderByScoreDesc(gameId)
+        return statsRepo.findByGame_IdOrderByScoreDesc(gameId)
                 .stream()
                 .map(stats -> new RankingDTO(
                         stats.getUser().getUsername(),

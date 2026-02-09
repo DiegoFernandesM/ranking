@@ -33,16 +33,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7); // remove "Bearer "
+            String token = authHeader.substring(7);
 
             String email = jwtService.extrairEmail(token);
 
             userRepo.findByEmail(email).ifPresent(user -> {
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                user.getEmail(),   // PRINCIPAL
+                                user,
                                 null,
-                                List.of()          // authorities vazias
+                                List.of()
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
