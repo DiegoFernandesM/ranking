@@ -1,10 +1,12 @@
 package com.gametracker.ranking.repository;
 
 import com.gametracker.ranking.model.Game;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface GameRepository extends JpaRepository<Game, Long> {}
+import java.util.Optional;
 
-
-
+@Repository
+public interface GameRepository extends JpaRepository<Game, Long> {
+    Optional<Game> findFirstByNameIgnoreCase(String name);
+}

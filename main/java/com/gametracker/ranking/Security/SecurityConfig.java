@@ -1,6 +1,5 @@
 package com.gametracker.ranking.Security;
 
-import com.gametracker.ranking.Security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,16 +26,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
-                        // 🔓 públicas
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/rank/game/*/public").permitAll()
-
-                        // 🔐 privadas
-                        .requestMatchers("/rank/game/*/me").authenticated()
-                        .requestMatchers("/rank/me").authenticated()
-
-                        // 🔐 resto
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/games/import").permitAll()
+                        .requestMatchers("/api/v1/ranking/game/*/public").permitAll()
+                        .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

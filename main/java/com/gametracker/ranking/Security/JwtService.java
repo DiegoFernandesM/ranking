@@ -2,6 +2,7 @@ package com.gametracker.ranking.Security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -10,11 +11,15 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY = "chave-super-secreta-com-no-minimo-32-caracteres";
-    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hora
+    private final String secretKey;
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+
+    public JwtService(@Value("${jwt.secret:chave-super-secreta-com-no-minimo-32-caracteres}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String gerarToken(String email) {

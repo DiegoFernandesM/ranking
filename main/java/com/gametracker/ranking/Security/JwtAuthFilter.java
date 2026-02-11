@@ -1,6 +1,5 @@
 package com.gametracker.ranking.Security;
 
-import com.gametracker.ranking.Security.JwtService;
 import com.gametracker.ranking.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,26 +34,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
-            String email = jwtService.extrairEmail(token);
+            if (jwtService.tokenValido(token)) {
+                String email = jwtService.extrairEmail(token);
 
-            userRepo.findByEmail(email).ifPresent(user -> {
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                user,
-                                null,
-                                List.of()
-                        );
+                userRepo.findByEmail(email).ifPresent(user -> {
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    user,
+                                    null,
+                                    List.of()
+                            );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            });
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                });
+            }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    // NÃO filtrar rotas públicas
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/auth");
+        return request.getRequestURI().startsWith("/api/v1/auth");
     }
 }

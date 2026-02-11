@@ -11,13 +11,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @JsonIgnore
+    @Column(nullable = false)
     private String password;
 
     public Long getId() {
@@ -46,5 +47,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long setId(Long userId) {
+        return this.id;
     }
 }

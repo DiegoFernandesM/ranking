@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/api/v1/games")
 public class GameController {
 
     private final ExternalGameApiService externalGameApiService;
@@ -15,7 +15,7 @@ public class GameController {
         this.externalGameApiService = externalGameApiService;
     }
 
-    @GetMapping("/rawg")
+    @GetMapping("/test/rawg")
     public ResponseEntity<?> testarRawg(@RequestParam String nome) {
         return externalGameApiService.buscarPrimeiroJogo(nome)
                 .map(ResponseEntity::ok)

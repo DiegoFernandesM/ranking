@@ -1,44 +1,64 @@
 package com.gametracker.ranking.controller;
 
 import com.gametracker.ranking.DTO.CreateStatsDTO;
-import com.gametracker.ranking.model.Game;
+import com.gametracker.ranking.Service.UserGameStatsService;
+import com.gametracker.ranking.exception.ResourceNotFoundException;
 import com.gametracker.ranking.model.User;
 import com.gametracker.ranking.model.UserGameStats;
-import com.gametracker.ranking.repository.GameRepository;
 import com.gametracker.ranking.repository.UserGameStatsRepository;
-import com.gametracker.ranking.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/stats")
+@RequestMapping("/api/v1/stats")
 @RequiredArgsConstructor
 public class UserGameStatsController {
 
-    private final UserGameStatsRepository statsRepo;
-    private final UserRepository userRepo;
-    private final GameRepository gameRepo;
+    private final UserGameStatsService statsService;
+    private final UserGameStatsRepository statsRepository;
 
     @PostMapping
-    public UserGameStats criarStats(@RequestBody CreateStatsDTO dto, Authentication  auth) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserGameStats criarStats(@Valid @RequestBody CreateStatsDTO dto) {
+        return statsService.createStats(dto);
+    }
 
-        String email = auth.getName();
-        User user = userRepo.findById(dto.userId()).orElseThrow();
-        Game game = gameRepo.findById(dto.gameId()).orElseThrow();
+    @PutMapping("/{id}")
+    public UserGameStats atualizarStats(@PathVariable Long id, @Valid @RequestBody CreateStatsDTO dto) {
+        if (!statsRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Estatísticas não encontradas");
+        }
+        return statsService.createStats(dto);
+    }
 
-        UserGameStats stats = new UserGameStats();
-        stats.setUser(user);
-        stats.setGame(game);
-        stats.setHoursPlayed(dto.hoursPlayed());
-        stats.setKda(dto.kda());
-        stats.setScore(dto.score());   // 👈 FALTAVA
-        stats.setRank(dto.rank());     // 👈 FALTAVA
+    @GetMapping("/{id}")
+    public UserGameStats getStatsById(@PathVariable Long id) {
+        return statsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Estatísticas não encontradas"));
+    }
 
+    @GetMapping("/user/{userId}")
+    public List<UserGameStats> getStatsByUser(@PathVariable Long userId) {
+        User user = new User();
+        user.setId(userId);
+        return statsService.getStatsByUser(user);
+    }
 
-        return statsRepo.save(stats);
+    @GetMapping("/game/{gameId}")
+    public List<UserGameStats> getStatsByGame(@PathVariable Long gameId) {
+        return statsService.getRankingByGame(gameId);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStats(@PathVariable Long id) {
+        if (!statsRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Estatísticas não encontradas");
+        }
+        statsRepository.deleteById(id);
     }
 }

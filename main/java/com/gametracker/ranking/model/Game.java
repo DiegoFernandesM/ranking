@@ -1,22 +1,17 @@
 package com.gametracker.ranking.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "games")
 public class Game {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     private String genre;
     private double rating;
@@ -37,7 +32,7 @@ public class Game {
         return genre;
     }
 
-    public void setGenre(String genre) { // ✅ singular
+    public void setGenre(String genre) {
         this.genre = genre;
     }
 
@@ -45,7 +40,7 @@ public class Game {
         return rating;
     }
 
-    public void setRating(double rating) { // ✅ único setter
+    public void setRating(double rating) {
         this.rating = rating;
     }
 }
